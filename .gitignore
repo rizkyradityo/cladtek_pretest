@@ -1,0 +1,61 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code settings folder (optional, hapus jika ingin upload .vscode)
+.vscode/
+
+# NuGet packages folder
+packages/
+
+# Visual Studio cache files
+*.vspscc
+*_i.c
+*_p.c
+*.cache
+*.ilk
+*.log
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+
+# IIS Express files
+*.vsix
+*.DotSettings.user
+
+# Publish outputs
+publish/
+
+# Resharper
+_ReSharper*/
+
+# Rider
+.idea/
+
+# Others
+*.dbmdl
+*.bak
+*.Backup
+*.rdlc.data
+*.dbproj.schemaview
+*.sqlite
+*.sdf
+*.cachefile
+.vs/

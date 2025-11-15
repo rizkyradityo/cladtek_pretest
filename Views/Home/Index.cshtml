@@ -1,0 +1,119 @@
+@{
+    ViewBag.Title = "Main Menu";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Main Menu
+        <small>PT. XYZ Overtime Management System</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-home"></i> Home</a></li>
+        <li class="active">Main Menu</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Welcome to PT. XYZ Overtime Management System</h3>
+                </div>
+                <div class="box-body">
+                    <p class="lead">
+                        This application is designed to manage employee data and overtime entries for PT. XYZ.
+                        Please select one of the menu options below to continue.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Menu Options -->
+    <div class="row">
+        <!-- Employee Menu -->
+        <div class="col-md-6">
+            <div class="info-box bg-aqua">
+                <span class="info-box-icon"><i class="fa fa-users"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">EMPLOYEE MANAGEMENT</span>
+                    <span class="info-box-number">Manage Employee Data</span>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: 100%"></div>
+                    </div>
+                    <span class="progress-description">
+                        <a href="@Url.Action("Index", "Employee")" class="btn btn-sm btn-default" style="margin-top: 10px;">
+                            <i class="fa fa-arrow-circle-right"></i> Go to Employee Menu
+                        </a>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Over Time Menu -->
+        <div class="col-md-6">
+            <div class="info-box bg-green">
+                <span class="info-box-icon"><i class="fa fa-clock-o"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">OVERTIME MANAGEMENT</span>
+                    <span class="info-box-number">Manage Overtime Entries</span>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: 100%"></div>
+                    </div>
+                    <span class="progress-description">
+                        <a href="@Url.Action("Index", "OverTime")" class="btn btn-sm btn-default" style="margin-top: 10px;">
+                            <i class="fa fa-arrow-circle-right"></i> Go to Overtime Menu
+                        </a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Information Section -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-info-circle"></i> System Information</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="description-block border-right">
+                                <span class="description-percentage text-green"><i class="fa fa-check-circle"></i></span>
+                                <h5 class="description-header">Employee Module</h5>
+                                <span class="description-text">Add, Edit, View, Delete employees with validation</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="description-block border-right">
+                                <span class="description-percentage text-green"><i class="fa fa-check-circle"></i></span>
+                                <h5 class="description-header">Overtime Module</h5>
+                                <span class="description-text">Manage overtime entries with automatic calculations</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="description-block">
+                                <span class="description-percentage text-green"><i class="fa fa-check-circle"></i></span>
+                                <h5 class="description-header">Data Protection</h5>
+                                <span class="description-text">Prevent deletion of employees with overtime records</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            console.log('Main Menu loaded successfully');
+        });
+    </script>
+}

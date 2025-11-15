@@ -1,0 +1,475 @@
+@model List<PTXYZ_OvertimeApp.Controllers.OverTimeViewModel>
+
+@{
+    ViewBag.Title = "Over Time Management";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Over Time Management
+        <small>Manage overtime entries</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-home"></i> Home</a></li>
+        <li class="active">Over Time Entry</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">List of Over Time Data</h3>
+                    <div class="box-tools">
+                        <button type="button" class="btn btn-success btn-sm" onclick="openAddModal()">
+                            <i class="fa fa-plus"></i> Add New
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">No</th>
+                                    <th>NIK</th>
+                                    <th>Employee Name</th>
+                                    <th>Date</th>
+                                    <th>Time Start</th>
+                                    <th>Time Finish</th>
+                                    <th>Actual OT Hours</th>
+                                    <th>Calculated OT Hours</th>
+                                    <th>Remarks</th>
+                                    <th style="width: 120px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    int startNo = (ViewBag.CurrentPage - 1) * ViewBag.PageSize + 1;
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@startNo</td>
+                                            <td>@item.NIK</td>
+                                            <td>@item.EmployeeName</td>
+                                            <td>@item.Date.ToString("yyyy-MM-dd")</td>
+                                            <td>@item.TimeStart.ToString("HH:mm")</td>
+                                            <td>@item.TimeFinish.ToString("HH:mm")</td>
+                                            <td class="text-center">
+                                                <span class="label label-primary">@item.ActualOTHours.ToString("0.00") hrs</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="label label-success">@item.CalculatedOTHours.ToString("0.00") hrs</span>
+                                            </td>
+                                            <td>@item.Remarks</td>
+                                            <td>
+                                                <button type="button" class="btn btn-warning btn-xs" onclick="openEditModal(@item.OverTimeId)">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-danger btn-xs" onclick="deleteOverTime(@item.OverTimeId)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        startNo++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="10" class="text-center">No data available</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="box-footer clearfix">
+                    @if (ViewBag.TotalPages > 1)
+                    {
+                        <ul class="pagination pagination-sm no-margin pull-right">
+                            @if (ViewBag.CurrentPage > 1)
+                            {
+                                <li><a href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1 })">&laquo;</a></li>
+                            }
+
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                            {
+                                <li class="@(i == ViewBag.CurrentPage ? "active" : "")">
+                                    <a href="@Url.Action("Index", new { page = i })">@i</a>
+                                </li>
+                            }
+
+                            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                            {
+                                <li><a href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1 })">&raquo;</a></li>
+                            }
+                        </ul>
+                    }
+                    <div class="pull-left">
+                        Page @ViewBag.CurrentPage of @ViewBag.TotalPages
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal for Add/Edit Overtime -->
+<div class="modal fade" id="overtimeModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="modalTitle">Add Overtime Entry</h4>
+            </div>
+            <form id="overtimeForm">
+                <div class="modal-body">
+                    <input type="hidden" id="OverTimeId" name="OverTimeId" value="0" />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="EmployeeId">Employee <span class="text-red">*</span></label>
+                                <select class="form-control" id="EmployeeId" name="EmployeeId" required>
+                                    <option value="">-- Select Employee --</option>
+                                    @* Using ViewBag to populate employee options *@
+                                    @if (ViewBag.Employees != null)
+                                    {
+                                        foreach (var emp in ViewBag.Employees)
+                                        {
+                                            <option value="@emp.EmployeeId">@emp.DisplayText</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Date">Date <span class="text-red">*</span></label>
+                                <input type="date" class="form-control" id="Date" name="Date" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="TimeStart">Time Start <span class="text-red">*</span></label>
+                                <div class='input-group date' id='timeStartPicker'>
+                                    <input type='text' class="form-control" id="TimeStart" name="TimeStart" required  />
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-clock-o"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="TimeFinish">Time Finish <span class="text-red">*</span></label>
+                                <div class='input-group date' id='timeFinishPicker'>
+                                    <input type='text' class="form-control" id="TimeFinish" name="TimeFinish" required  />
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-clock-o"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ActualOTHours">Actual OT Hours <span class="text-red">*</span></label>
+                                <input type="text" class="form-control" id="ActualOTHours" name="ActualOTHours" readonly />
+                                <span class="help-block">Maximum 3 hours</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="CalculatedOTHours">Calculated OT Hours <span class="text-red">*</span></label>
+                                <input type="text" class="form-control" id="CalculatedOTHours" name="CalculatedOTHours" readonly />
+                                <span class="help-block">Actual OT Hours × 2</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="Remarks">Remarks</label>
+                                <textarea class="form-control" id="Remarks" name="Remarks" rows="3" maxlength="500"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        var currentOvertimeId = 0;
+
+        $(document).ready(function() {
+            // Initialize datetime pickers
+            $('#timeStartPicker').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm',
+                sideBySide: true
+            });
+
+            $('#timeFinishPicker').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm',
+                sideBySide: true
+            });
+
+            // Calculate OT hours when time changes
+            $('#timeStartPicker').on('dp.change', function(e) {
+                calculateOTHours();
+            });
+
+            $('#timeFinishPicker').on('dp.change', function(e) {
+                calculateOTHours();
+            });
+        });
+
+
+
+        // Open Add Modal
+        function openAddModal() {
+            currentOvertimeId = 0;
+            $('#modalTitle').text('Add New Overtime Entry');
+            $('#overtimeForm')[0].reset();
+            $('#OverTimeId').val('0');
+
+            // Set default date to today
+            var today = new Date().toISOString().split('T')[0];
+            $('#Date').val(today);
+
+            // Clear datetime pickers
+            $('#timeStartPicker').data("DateTimePicker").clear();
+            $('#timeFinishPicker').data("DateTimePicker").clear();
+
+            // Clear calculated fields
+            $('#ActualOTHours').val('');
+            $('#CalculatedOTHours').val('');
+
+            // Load employees
+            loadEmployees();
+
+            $('#overtimeModal').modal('show');
+        }
+
+        // Load employees dynamically
+        function loadEmployees(callback) {
+            $.ajax({
+                url: '@Url.Action("GetEmployees", "OverTime")',
+                type: 'GET',
+                success: function (data) {
+                    var select = $('#EmployeeId');
+                    select.empty();
+                    select.append('<option value="">-- Select Employee --</option>');
+                    $.each(data, function (index, item) {
+                        select.append($('<option></option>').val(item.value).text(item.text));
+                    });
+
+                    if (callback) callback();
+                },
+                error: function () {
+                    alert('Error loading employees');
+                }
+            });
+        }
+
+        // Open Edit Modal
+        function openEditModal(id) {
+            currentOvertimeId = id;
+            $('#modalTitle').text('Edit Overtime Entry');
+
+            $('#timeStartPicker').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm',
+                sideBySide: true
+            });
+
+            $('#timeFinishPicker').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm',
+                sideBySide: true
+            });
+
+            // Calculate OT hours when time changes
+            $('#timeStartPicker').on('dp.change', function (e) {
+                calculateOTHours();
+            });
+
+            $('#timeFinishPicker').on('dp.change', function (e) {
+                calculateOTHours();
+            });
+
+            // Load overtime data
+            $.ajax({
+                url: '@Url.Action("Edit", "OverTime")/' + id,
+                type: 'GET',
+                success: function (data) {
+
+                    loadEmployees(function () {
+                        $('#EmployeeId').val(data.employeeId);
+                    });
+
+                    $('#OverTimeId').val(data.overTimeId);
+                    $('#EmployeeId').val(data.employeeId);
+                    $('#Date').val(data.date);
+
+                    // Set datetime pickers
+                    $('#timeStartPicker').data("DateTimePicker").date(moment(data.timeStart));
+                    $('#timeFinishPicker').data("DateTimePicker").date(moment(data.timeFinish));
+
+                    $('#ActualOTHours').val(data.actualOTHours);
+                    $('#CalculatedOTHours').val(data.calculatedOTHours);
+                    $('#Remarks').val(data.remarks);
+
+                    $('#overtimeModal').modal('show');
+                },
+                error: function () {
+                    alert('Error loading overtime data');
+                }
+            });
+        }
+
+        // Calculate OT Hours using JavaScript
+        function calculateOTHours() {
+            var timeStart = $('#timeStartPicker').data("DateTimePicker").date();
+            var timeFinish = $('#timeFinishPicker').data("DateTimePicker").date();
+
+            if (timeStart && timeFinish) {
+                // Validate Time Finish is after Time Start
+                if (timeFinish.isSameOrBefore(timeStart)) {
+                    alert('Time Finish must be later than Time Start!');
+                    $('#timeFinishPicker').data("DateTimePicker").clear();
+                    $('#ActualOTHours').val('');
+                    $('#CalculatedOTHours').val('');
+                    return;
+                }
+
+                // Calculate difference in hours
+                var duration = moment.duration(timeFinish.diff(timeStart));
+                var hours = duration.asHours();
+                var actualOTHours = Math.round(hours * 100) / 100; // Round to 2 decimal places
+
+                // Check maximum 3 hours
+                if (actualOTHours > 3) {
+                    alert('Maximum Actual OT Hours is 3 hours! Please adjust the time.');
+                    $('#ActualOTHours').val('');
+                    $('#CalculatedOTHours').val('');
+                    return;
+                }
+
+                // Calculate OT hours (Actual × 2)
+                var calculatedOTHours = actualOTHours * 2;
+
+                // Update fields
+                $('#ActualOTHours').val(actualOTHours.toFixed(2));
+                $('#CalculatedOTHours').val(calculatedOTHours.toFixed(2));
+            }
+        }
+
+        // Submit Overtime Form
+        $('#overtimeForm').submit(function (e) {
+            e.preventDefault();
+
+            // Get datetime values
+            var timeStart = $('#timeStartPicker').data("DateTimePicker").date();
+            var timeFinish = $('#timeFinishPicker').data("DateTimePicker").date();
+
+            if (!timeStart || !timeFinish) {
+                alert('Please select both Time Start and Time Finish');
+                return;
+            }
+
+            var formData = {
+                OverTimeId: $('#OverTimeId').val(),
+                EmployeeId: $('#EmployeeId').val(),
+                Date: $('#Date').val(),
+                TimeStart: timeStart.format('YYYY-MM-DD HH:mm:ss'),
+                TimeFinish: timeFinish.format('YYYY-MM-DD HH:mm:ss'),
+                ActualOTHours: parseFloat($('#ActualOTHours').val()),
+                CalculatedOTHours: parseFloat($('#CalculatedOTHours').val()),
+                Remarks: $('#Remarks').val()
+            };
+
+            var url = formData.OverTimeId == '0'
+                ? '@Url.Action("Create", "OverTime")'
+                : '@Url.Action("Edit", "OverTime")';
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        $('#overtimeModal').modal('hide');
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Error: ' + error);
+                }
+            });
+        });
+
+        // Delete Overtime
+        function deleteOverTime(id) {
+            if (confirm('Are you sure you want to delete this overtime entry?')) {
+                $.ajax({
+                    url: '@Url.Action("Delete", "OverTime")/' + id,
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message);
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Error deleting overtime entry');
+                    }
+                });
+            }
+        }
+
+        // Add CSRF token to all AJAX requests
+        $(document).ready(function () {
+            $.ajaxSetup({
+                beforeSend: function (xhr) {
+                    var token = $('@Html.AntiForgeryToken()').val();
+                    if (token) {
+                        xhr.setRequestHeader('RequestVerificationToken', token);
+                    }
+                }
+            });
+        });
+    </script>
+}
+
+@Html.AntiForgeryToken()
